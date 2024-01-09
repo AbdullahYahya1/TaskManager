@@ -2,9 +2,26 @@
 {% block content %}
     <form action="" method="post">
         {% csrf_token %}
-        <input type="text" name="username">
-        <input type="password" name="password">
+        <input type="text" name="username" placeholder='username...'>
+        {% if not login %}
+        <input type="email" name="email" placeholder='email...'>
+        {% endif %}
+        <input type="password" name="password" placeholder='password...'>
+        {% if not login %}
+            <input type="password" name="password2" placeholder='conform password...'>
+        {% endif %}
         <input type="submit" value="submit">        
     </form>
-    {{UserCreationForm}}
+    {% if  login %}
+    <a href="{% url 'register_form'  %}">register</a>
+    {% else %}
+    <a href="{% url 'login_form'  %}">login</a>
+    {% endif %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 {% endblock content %}
