@@ -1,0 +1,11 @@
+.grid{
+    display: grid;
+    grid-template-columns: auto auto auto; /* Adjust the number of columns as needed */
+    margin-inline:50px;
+    text-align: center;
+    background-color: rgb(192, 190, 190);
+}
+.grid-item{
+    margin: 5px; 
+    
+}

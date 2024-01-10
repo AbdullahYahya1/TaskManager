@@ -10,7 +10,13 @@ from django.contrib.auth.decorators import login_required
 
 @login_required(login_url='login_form')
 def index(request):
-    return render(request, 'taskapp/index.html')
+    daytask = request.user.day_tasks.all()
+    weeklytask = request.user.weekly_tasks.all()
+    monthlytask = request.user.monthly_tasks.all()
+    return render(request, 'taskapp/index.html', {
+        'daytask': daytask,
+        'weeklytask': weeklytask,
+        'monthlytask': monthlytask})
 
 
 

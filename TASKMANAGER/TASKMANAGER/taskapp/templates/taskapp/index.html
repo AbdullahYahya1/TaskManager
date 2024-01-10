@@ -1,5 +1,43 @@
 {% include "base.html" %}
+{% load static %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'taskapp/css/style.css' %}">
+{% endblock header %}
+
 {% block content %}
     <h1>hi {{user}}</h1>
     <a href="{% url 'logout_page'  %}">logout</a>
+
+    <div class="grid">
+        
+        <div class="grid-item">
+            hh
+            {% for task in daytask %}
+                <div>
+                {{task}}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="grid-item">
+            {% for task in weeklytask %}
+                <div>
+                {{task}}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="grid-item">
+            {% for task in monthlytask %}
+                <div>
+                {{task}}
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+
+
 {% endblock content %}
