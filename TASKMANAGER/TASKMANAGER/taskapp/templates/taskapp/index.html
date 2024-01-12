@@ -1,43 +1,74 @@
 {% include "base.html" %}
-{% load static %}
+{% load static %} 
 
 {% block header %}
-<link rel="stylesheet" href="{% static 'taskapp/css/style.css' %}">
-{% endblock header %}
+    <link rel="stylesheet"href="{% static 'taskapp/css/style.css' %}"/>
+    <script src="{% static 'taskapp/js/app.js' %}"></script>
+{% endblock header %} 
 
 {% block content %}
-    <h1>hi {{user}}</h1>
-    <a href="{% url 'logout_page'  %}">logout</a>
-
-    <div class="grid">
-        
-        <div class="grid-item">
-            hh
-            {% for task in daytask %}
-                <div>
-                {{task}}
-                </div>
-            {% endfor %}
-        </div>
-
-        <div class="grid-item">
-            {% for task in weeklytask %}
-                <div>
-                {{task}}
-                </div>
-            {% endfor %}
-        </div>
-
-        <div class="grid-item">
-            {% for task in monthlytask %}
-                <div>
-                {{task}}
-                </div>
-            {% endfor %}
-        </div>
-
+    <div class='addbutton' >
+        <img class='addimg' src="{% static 'taskapp/images/add.jpg' %}" alt="">
     </div>
 
+    <h1>hi {{user}}</h1>
+    <a href="{% url 'logout_page'  %}">logout</a>
+    <div>
+        <input type="text" placeholder='search for a task....'> 
+        <button type="submit">search</button>
+    </div>
+    <div class="grid">
+        <div class="grid-item">
+            <h1 class='tasksHeaders'>daily tasks</h1>
+            {% for task in daytask %}
+            <div class="{{task.id}} daytask item {% if task.is_finished %}strikethrough{% endif %}">
+                <div class="flex-large">
+                    <a href=""> {{ task }} </a>
+                </div>
+                <div class="flex-small">{{ task.estimated_time }}</div>
+            </div>
+            {% endfor %}
+        </div>
 
+        <div class="grid-item">
+            <h1 class='tasksHeaders'>weekly tasks</h1>
+            {% for task in weeklytask %}
+            <div class="{{task.id}} weeklytask item {% if task.is_finished %}strikethrough{% endif %}">
+                <div class="flex-large">
+                    <a href=""> {{ task }} </a>
+                </div>
+                <div class="flex-small">{{ task.estimated_time }}</div>
+            </div>
+            {% endfor %}
+        </div>
 
+        <div class="grid-item">
+            <h1 class='tasksHeaders'>monthly tasks</h1>
+            {% for task in monthlytask %}
+            <div class="{{task.id}} monthlytask item {% if task.is_finished %}strikethrough{% endif %}">
+                <div class="flex-large">
+                    <a href=""> {{ task }} </a>
+                </div>
+                <div class="flex-small">{{ task.estimated_time }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class='addContainer view'>
+        <div class='addbutton closeButton'>
+            X
+        </div>
+        <a href="">
+            add daily task
+        </a>
+        <a href="">
+            add weekly task
+        </a>
+
+        <a href="">
+            add monthly task
+        </a>
+
+    </div>
 {% endblock content %}

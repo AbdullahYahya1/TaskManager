@@ -7,6 +7,31 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate , login , logout
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+types =('daytask', 'weeklytask' , 'monthlytask')
+@csrf_exempt  # Temporarily disable CSRF for demonstration
+def send_number(request):
+    if request.method == "POST" and request.user.is_authenticated:
+        task = None
+        data = json.loads(request.body)
+        pk = data.get('number',0)
+        task_type = data.get('task_type',0)
+        if task_type == types[0]:
+            task = DayTask.objects.get(pk=pk)
+        elif task_type == types[1]:
+            task = WeeklyTask.objects.get(pk=pk)
+        elif task_type == types[2]:
+            task = MonthlyTask.objects.get(pk=pk)
+        if  request.user != task.user:
+            return JsonResponse({'status': 'error', 'message': 'you are not allowed'})
+        task.is_finished =not task.is_finished
+        task.save()   
+        return JsonResponse({'status': 'success', 'number_received': pk})
+    return JsonResponse({'status': 'error', 'message': 'Only POST method allowed'})
+
 
 @login_required(login_url='login_form')
 def index(request):
@@ -17,9 +42,11 @@ def index(request):
         'daytask': daytask,
         'weeklytask': weeklytask,
         'monthlytask': monthlytask})
-
-
-
+def task(request,pk):
+      return HttpResponse(f'{pk} {DayTask.objects.get(pk=pk).user}')
+  
+def daylytask(request):
+    return render(request, 'taskapp/daylytask.html',{})
 def login_form(request):
     if request.user.is_authenticated:
         return redirect('index')
