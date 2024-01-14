@@ -6,5 +6,6 @@ urlpatterns = [
     path('register_form', views.register_form, name='register_form'), # Include your app's URLs
     path('logout_page', views.logout_page, name='logout_page'),
     path('task/<str:pk>', views.task, name='task'),
+    path('add_task/<str:task_type>', views.add_task, name='add_task'),
     path('send_number/', views.send_number, name='send_number'),
 ]

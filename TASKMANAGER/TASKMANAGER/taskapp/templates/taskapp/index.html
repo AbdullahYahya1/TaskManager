@@ -23,9 +23,14 @@
             {% for task in daytask %}
             <div class="{{task.id}} daytask item {% if task.is_finished %}strikethrough{% endif %}">
                 <div class="flex-large">
-                    <a href=""> {{ task }} </a>
+                    {{ task }}
                 </div>
-                <div class="flex-small">{{ task.estimated_time }}</div>
+                <div class="flex-small">
+                    {{ task.estimated_time }}
+                </div>
+                <div class="flex-end">
+                    <a href="" class="details-button">Details</a>
+                </div>
             </div>
             {% endfor %}
         </div>
@@ -35,9 +40,14 @@
             {% for task in weeklytask %}
             <div class="{{task.id}} weeklytask item {% if task.is_finished %}strikethrough{% endif %}">
                 <div class="flex-large">
-                    <a href=""> {{ task }} </a>
+                    {{ task }}
                 </div>
-                <div class="flex-small">{{ task.estimated_time }}</div>
+                <div class="flex-small">
+                    {{ task.estimated_time }}
+                </div>
+                <div class="flex-end">
+                    <a href="" class="details-button">Details</a>
+                </div>
             </div>
             {% endfor %}
         </div>
@@ -47,9 +57,14 @@
             {% for task in monthlytask %}
             <div class="{{task.id}} monthlytask item {% if task.is_finished %}strikethrough{% endif %}">
                 <div class="flex-large">
-                    <a href=""> {{ task }} </a>
+                    {{ task }}
                 </div>
-                <div class="flex-small">{{ task.estimated_time }}</div>
+                <div class="flex-small">
+                    {{ task.estimated_time }}
+                </div>
+                <div class="flex-end">
+                    <a href="" class="details-button">Details</a>
+                </div>
             </div>
             {% endfor %}
         </div>
@@ -59,16 +74,17 @@
         <div class='addbutton closeButton'>
             X
         </div>
-        <a href="">
+        <a href="{% url 'add_task' 'daytask' %}">
             add daily task
         </a>
-        <a href="">
+        <a href="{% url 'add_task' 'weeklytask'  %}">
             add weekly task
         </a>
-
-        <a href="">
+        <a href="{% url 'add_task' 'monthlytask'  %}">
             add monthly task
         </a>
-
     </div>
+
+
+
 {% endblock content %}

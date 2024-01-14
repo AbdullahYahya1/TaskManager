@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+import calendar
+DAYS_OF_WEEK = [(str(i), day) for i, day in enumerate(calendar.day_name)]
+
 class DayTask(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='day_tasks')
     title = models.CharField(max_length=200)
@@ -20,6 +23,7 @@ class WeeklyTask(models.Model):
     description = models.TextField(blank=True, null=True)
     is_finished = models.BooleanField(default=False)
     estimated_time = models.CharField(max_length=5, blank=True, null=True)  # New field for estimated time
+    day_of_week = models.CharField(max_length=9, choices=DAYS_OF_WEEK ,default='0')  # New field for day of the week
 
     def __str__(self):
         return self.title
@@ -31,7 +35,7 @@ class MonthlyTask(models.Model):
     description = models.TextField(blank=True, null=True)
     is_finished = models.BooleanField(default=False)
     estimated_time = models.CharField(max_length=5, blank=True, null=True)  # New field for estimated time
-
+    day_of_month = models.IntegerField(default=1) 
     def __str__(self):
         return self.title
 

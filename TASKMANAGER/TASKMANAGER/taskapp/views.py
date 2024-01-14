@@ -17,8 +17,8 @@ def send_number(request):
     if request.method == "POST" and request.user.is_authenticated:
         task = None
         data = json.loads(request.body)
-        pk = data.get('number',0)
-        task_type = data.get('task_type',0)
+        pk = data.get('number',-1)
+        task_type = data.get('task_type',-1)
         if task_type == types[0]:
             task = DayTask.objects.get(pk=pk)
         elif task_type == types[1]:
@@ -47,6 +47,9 @@ def task(request,pk):
   
 def daylytask(request):
     return render(request, 'taskapp/daylytask.html',{})
+
+
+
 def login_form(request):
     if request.user.is_authenticated:
         return redirect('index')
@@ -89,6 +92,17 @@ def register_form(request):
             messages.error(request, 'Passwords do not match')
     return render(request, 'taskapp/login_register_form.html')
 
+def add_task(request, task_type):    
+    if task_type not in types:
+        return HttpResponse('not allowed')
+    if request.method == 'POST':
+        if task_type == types[0]:
+            pass
+        elif task_type == types[1]:
+            pass
+        elif task_type == types[2]:
+            pass 
+    return render(request, 'taskapp/add_task.html' , {})
 def logout_page(request):
     logout(request)
     return redirect('login_form')
