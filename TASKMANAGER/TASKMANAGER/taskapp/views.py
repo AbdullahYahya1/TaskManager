@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from .models import *
+from .forms import *
 # from .forms import RoomForm
 from django.db.models import Q
 from django.contrib.auth.models import User 
@@ -12,6 +13,11 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 types =('daytask', 'weeklytask' , 'monthlytask')
+task_forms = {
+        'daytask': DayTaskForm,
+        'weeklytask': WeeklyTaskForm,
+        'monthlytask': MonthlyTaskForm
+    }
 @csrf_exempt  # Temporarily disable CSRF for demonstration
 def send_number(request):
     if request.method == "POST" and request.user.is_authenticated:
@@ -42,13 +48,13 @@ def index(request):
         'daytask': daytask,
         'weeklytask': weeklytask,
         'monthlytask': monthlytask})
+
+
 def task(request,pk):
       return HttpResponse(f'{pk} {DayTask.objects.get(pk=pk).user}')
   
 def daylytask(request):
     return render(request, 'taskapp/daylytask.html',{})
-
-
 
 def login_form(request):
     if request.user.is_authenticated:
@@ -93,16 +99,22 @@ def register_form(request):
     return render(request, 'taskapp/login_register_form.html')
 
 def add_task(request, task_type):    
-    if task_type not in types:
+    form = task_forms.get(task_type , None)
+    if not form:
         return HttpResponse('not allowed')
     if request.method == 'POST':
-        if task_type == types[0]:
-            pass
-        elif task_type == types[1]:
-            pass
-        elif task_type == types[2]:
-            pass 
-    return render(request, 'taskapp/add_task.html' , {})
+        form = form(request.POST)        
+        if form.is_valid():
+            formres = form.save(commit=False)
+            formres.user = request.user
+            formres.save()
+            return redirect('index') 
+        else:
+            messages.error(request,'not good')
+    else:
+        form = form()
+    return render(request, 'taskapp/add_task.html' , {'form':form})
+    
 def logout_page(request):
     logout(request)
     return redirect('login_form')

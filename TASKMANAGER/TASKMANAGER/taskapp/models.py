@@ -4,7 +4,8 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 import calendar
-DAYS_OF_WEEK = [(str(i), day) for i, day in enumerate(calendar.day_name)]
+ordered_days = list(calendar.day_name)[5:] + list(calendar.day_name)[:5]
+DAYS_OF_WEEK = [(str(i), day) for i, day in enumerate(ordered_days)]
 
 class DayTask(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='day_tasks')
