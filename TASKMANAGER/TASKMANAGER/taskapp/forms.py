@@ -3,7 +3,7 @@ from .models import *
 class DayTaskForm(ModelForm):
     class Meta:
         model = DayTask
-        fields = ['title', 'description','estimated_time']
+        fields = ['title', 'description','estimated_time',]
         # or use '__all__' to include all fields
 class WeeklyTaskForm(ModelForm):
     class Meta:

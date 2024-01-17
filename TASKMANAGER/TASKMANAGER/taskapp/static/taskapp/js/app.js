@@ -38,7 +38,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let detailButtons = document.querySelectorAll('.details-button');
     detailButtons.forEach(button => {
         button.addEventListener('click', (event) => {
-            event.preventDefault();
             event.stopPropagation();
         });
     });

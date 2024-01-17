@@ -17,6 +17,10 @@
         <input type="text" placeholder='search for a task....'> 
         <button type="submit">search</button>
     </div>
+
+    {% for r in rooms %}
+    {{r}} {{r.id}}
+    {% endfor %}
     <div class="grid">
         <div class="grid-item">
             <h1 class='tasksHeaders'>daily tasks</h1>
@@ -29,7 +33,7 @@
                     {{ task.estimated_time }}
                 </div>
                 <div class="flex-end">
-                    <a href="" class="details-button">Details</a>
+                    <a href='{% url "task" task.id %}?taskType=weeklytask' class="details-button">Details</a>
                 </div>
             </div>
             {% endfor %}
@@ -46,7 +50,7 @@
                     {{ task.estimated_time }}
                 </div>
                 <div class="flex-end">
-                    <a href="" class="details-button">Details</a>
+                    <a href='{% url "task" task.id %}?taskType=weeklytask' class="details-button">Details</a>
                 </div>
             </div>
             {% endfor %}
@@ -63,7 +67,7 @@
                     {{ task.estimated_time }}
                 </div>
                 <div class="flex-end">
-                    <a href="" class="details-button">Details</a>
+                    <a href='{% url "task" task.id %}?taskType=monthlytask' class="details-button">Details</a>
                 </div>
             </div>
             {% endfor %}
@@ -74,17 +78,16 @@
         <div class='addbutton closeButton'>
             X
         </div>
-        <a href="{% url 'add_task' 'daytask' %}">
-            add daily task
-        </a>
-        <a href="{% url 'add_task' 'weeklytask'  %}">
-            add weekly task
-        </a>
-        <a href="{% url 'add_task' 'monthlytask'  %}">
-            add monthly task
-        </a>
+        {% if room %}
+        <a href="{% url 'add_task' room.id 'daytask' %}">Add Daily Task</a>
+        <a href="{% url 'add_task' room.id 'weeklytask' %}">Add Weekly Task</a>
+        <a href="{% url 'add_task' room.id 'monthlytask' %}">Add Monthly Task</a>
+        <a href="{% url 'share_room' room.id %}">Share This Room</a>
+        {% endif %}
     </div>
 
-
+    <div class='popoutTaskContainer view'>
+        
+    </div>
 
 {% endblock content %}

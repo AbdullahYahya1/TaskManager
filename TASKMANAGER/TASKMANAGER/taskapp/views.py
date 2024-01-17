@@ -1,5 +1,5 @@
-from django.shortcuts import render,redirect
-from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render,redirect
+from django.http import HttpResponse, HttpResponseForbidden
 from .models import *
 from .forms import *
 # from .forms import RoomForm
@@ -40,18 +40,34 @@ def send_number(request):
 
 
 @login_required(login_url='login_form')
+def create_room(request):
+    if request.method == 'POST':
+        room_name = request.POST.get('room_name')
+        room = Room.objects.create(name=room_name)
+        room.users.add(request.user)
+        return redirect('index')  # or wherever you want to redirect
+    return render(request, 'taskapp/create_room.html')
+
 def index(request):
-    daytask = request.user.day_tasks.all()
-    weeklytask = request.user.weekly_tasks.all()
-    monthlytask = request.user.monthly_tasks.all()
-    return render(request, 'taskapp/index.html', {
-        'daytask': daytask,
-        'weeklytask': weeklytask,
-        'monthlytask': monthlytask})
-
-
+    rooms = Room.objects.filter(users=request.user.id)
+    if request.user.is_authenticated:
+        room =rooms[0]  
+        daytask =room.day_tasks.all()
+        weeklytask = room.weekly_tasks.all()
+        monthlytask = room.monthly_tasks.all()
+        return render(request, 'taskapp/index.html', {
+            'daytask': daytask,
+            'weeklytask': weeklytask,
+            'monthlytask': monthlytask,
+            'room': room,
+            'rooms':rooms
+                        })
+    else:
+        return render(request, 'taskapp/index.html')
 def task(request,pk):
-      return HttpResponse(f'{pk} {DayTask.objects.get(pk=pk).user}')
+    taskType= request.GET.get('taskType')
+    task = DayTask.objects.get(pk=pk).user
+    return render(request, 'taskapp/task.html')
   
 def daylytask(request):
     return render(request, 'taskapp/daylytask.html',{})
@@ -73,15 +89,16 @@ def login_form(request):
                         ,'error': 'Invalid username or password.'})
 
     return render(request, 'taskapp/login_register_form.html', {'login':True})
-
 def register_form(request):
     if request.user.is_authenticated:
         return redirect('index')
+
     if request.method == 'POST':
         username = request.POST.get('username', '')
         email = request.POST.get('email', '')
         password = request.POST.get('password', '')
         password2 = request.POST.get('password2', '')
+
         if password == password2:
             if User.objects.filter(username=username).exists():
                 messages.error(request, 'Username already exists')
@@ -90,31 +107,59 @@ def register_form(request):
             else:
                 user = User.objects.create_user(username=username, email=email, password=password)
                 user.save()
+                # Authenticate and login the user
                 user = authenticate(username=username, password=password)
                 if user is not None:
                     login(request, user)
+                    # Create a default room for the new user
+                    default_room = Room.objects.create(name=f"{username}'s Room")
+                    default_room.owner = user
+                    default_room.users.add(user)
+                    # Redirect to the index page or a welcome page
                     return redirect('index')
         else:
             messages.error(request, 'Passwords do not match')
+
     return render(request, 'taskapp/login_register_form.html')
 
-def add_task(request, task_type):    
-    form = task_forms.get(task_type , None)
-    if not form:
-        return HttpResponse('not allowed')
+@login_required(login_url='login_form')
+def add_task(request, room_id, task_type):    
+    room = get_object_or_404(Room, pk=room_id)
+    if not room.users.filter(id=request.user.id).exists():
+        return HttpResponseForbidden('You do not have permission to add tasks to this room.')
+    form_class = task_forms.get(task_type)
+    if form_class is None:
+        return HttpResponse('Task type not allowed')
+
     if request.method == 'POST':
-        form = form(request.POST)        
+        form = form_class(request.POST)
         if form.is_valid():
-            formres = form.save(commit=False)
-            formres.user = request.user
-            formres.save()
-            return redirect('index') 
+            task = form.save(commit=False)
+            task.room = room 
+            task.user = request.user
+            task.save()
+            return redirect('index')  
         else:
-            messages.error(request,'not good')
+            messages.error(request, 'Form is not valid')
     else:
-        form = form()
-    return render(request, 'taskapp/add_task.html' , {'form':form})
+        form = form_class()
+    
+    return render(request, 'taskapp/add_task.html', {'form': form, 'room': room})
     
 def logout_page(request):
     logout(request)
     return redirect('login_form')
+
+def share_room(request, room_id):
+    room = get_object_or_404(Room, pk=room_id)
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        try:
+            user_to_share_with = User.objects.get(username=username)
+            room.users.add(user_to_share_with)
+            # Optionally, redirect to the room view or display a success message
+        except User.DoesNotExist:
+            # Handle the error - user not found
+            pass
+    # Render a form for sharing a room
+    return render(request, 'taskapp/share_room.html', {'room': room})

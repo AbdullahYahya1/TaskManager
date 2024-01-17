@@ -5,7 +5,10 @@ urlpatterns = [
     path('login_form', views.login_form, name='login_form'), # Include your app's URLs
     path('register_form', views.register_form, name='register_form'), # Include your app's URLs
     path('logout_page', views.logout_page, name='logout_page'),
-    path('task/<str:pk>', views.task, name='task'),
-    path('add_task/<str:task_type>', views.add_task, name='add_task'),
+    path('task/<int:pk>', views.task, name='task'),
+    path('add_task/<int:room_id>/<str:task_type>', views.add_task, name='add_task'),
+    path('create_room/', views.create_room, name='create_room'),
+    path('share_room/<int:room_id>/', views.share_room, name='share_room'),
+
     path('send_number/', views.send_number, name='send_number'),
 ]
