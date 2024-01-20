@@ -7,8 +7,9 @@ urlpatterns = [
     path('logout_page', views.logout_page, name='logout_page'),
     path('task/<int:pk>', views.task, name='task'),
     path('add_task/<int:room_id>/<str:task_type>', views.add_task, name='add_task'),
+    path('edit_task/<int:task_id>/<str:task_type>/', views.edit_task, name='edit_task'),
+    path('delete_task/<int:task_id>/<str:task_type>/', views.delete_task, name='delete_task'),
     path('create_room/', views.create_room, name='create_room'),
     path('share_room/<int:room_id>/', views.share_room, name='share_room'),
-
     path('send_number/', views.send_number, name='send_number'),
 ]

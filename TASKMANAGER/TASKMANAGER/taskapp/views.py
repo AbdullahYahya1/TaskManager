@@ -49,28 +49,44 @@ def create_room(request):
     return render(request, 'taskapp/create_room.html')
 
 def index(request):
+    query = request.GET.get('search', '')
+    room_id = request.GET.get('room_id')  # Get room_id from URL
     rooms = Room.objects.filter(users=request.user.id)
     if request.user.is_authenticated:
-        room =rooms[0]  
-        daytask =room.day_tasks.all()
-        weeklytask = room.weekly_tasks.all()
-        monthlytask = room.monthly_tasks.all()
+        if room_id:
+            room = get_object_or_404(Room, pk=room_id, users=request.user)
+        else:
+            room = rooms.first()  # Default to the first room
+        # Filter tasks based on the search query
+        daytask = room.day_tasks.filter(title__icontains=query)
+        weeklytask = room.weekly_tasks.filter(title__icontains=query)
+        monthlytask = room.monthly_tasks.filter(title__icontains=query)
         return render(request, 'taskapp/index.html', {
             'daytask': daytask,
             'weeklytask': weeklytask,
             'monthlytask': monthlytask,
             'room': room,
-            'rooms':rooms
-                        })
+            'rooms': rooms,
+            'query': query , 
+            'users': room.users.all(),
+            
+        })
     else:
         return render(request, 'taskapp/index.html')
+
 def task(request,pk):
-    taskType= request.GET.get('taskType')
-    task = DayTask.objects.get(pk=pk).user
-    return render(request, 'taskapp/task.html')
-  
-def daylytask(request):
-    return render(request, 'taskapp/daylytask.html',{})
+    task_type= request.GET.get('taskType',-1)
+    if task_type == types[0]:
+        task = DayTask.objects.get(pk=pk)
+    elif task_type == types[1]:
+        task = WeeklyTask.objects.get(pk=pk)
+    elif task_type == types[2]:
+        task = MonthlyTask.objects.get(pk=pk)
+    
+    return render(request, 'taskapp/task.html', {
+        'task':task,
+        'task_type': task_type
+    })
 
 def login_form(request):
     if request.user.is_authenticated:
@@ -145,7 +161,38 @@ def add_task(request, room_id, task_type):
         form = form_class()
     
     return render(request, 'taskapp/add_task.html', {'form': form, 'room': room})
-    
+
+
+def delete_task(request, task_id , task_type):
+    if task_type == types[0]:
+        task = DayTask.objects.get(pk=task_id)
+    elif task_type == types[1]:
+        task = WeeklyTask.objects.get(pk=task_id)
+    elif task_type == types[2]:
+        task = MonthlyTask.objects.get(pk=task_id)
+    else:
+        return HttpResponse('failed to find task')
+    task.delete()
+    return redirect('index')
+
+def edit_task(request, task_id  ,task_type):
+    form_class = task_forms.get(task_type)
+    task = None
+    if task_type == types[0]:
+        task = DayTask.objects.get(pk=task_id)
+    elif task_type == types[1]:
+        task = WeeklyTask.objects.get(pk=task_id)
+    elif task_type == types[2]:
+        task = MonthlyTask.objects.get(pk=task_id)
+    else:
+        return HttpResponse('failed to find task')
+    if request.method == 'POST':
+        form = form_class(request.POST, instance=task)
+        if form.is_valid():
+            form.save()
+            return redirect('index')
+    form = form_class(instance = task)
+    return render(request, 'taskapp/edit_task.html', {'form': form, 'room': task.room})
 def logout_page(request):
     logout(request)
     return redirect('login_form')
@@ -153,13 +200,11 @@ def logout_page(request):
 def share_room(request, room_id):
     room = get_object_or_404(Room, pk=room_id)
     if request.method == 'POST':
-        username = request.POST.get('username')
+        email = request.POST.get('email')
         try:
-            user_to_share_with = User.objects.get(username=username)
+            user_to_share_with = User.objects.get(email=email)
             room.users.add(user_to_share_with)
-            # Optionally, redirect to the room view or display a success message
         except User.DoesNotExist:
-            # Handle the error - user not found
             pass
     # Render a form for sharing a room
     return render(request, 'taskapp/share_room.html', {'room': room})

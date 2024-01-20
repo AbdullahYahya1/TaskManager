@@ -2,7 +2,7 @@
 {% load static %} 
 
 {% block header %}
-    <link rel="stylesheet"href="{% static 'taskapp/css/addtask.css' %}"/>
+    <link rel="stylesheet"href="{% static 'taskapp/css/edit.css' %}"/>
 {% endblock header %} 
 {% block content %}
 
@@ -10,7 +10,7 @@
     <form action="" method="post">
         {% csrf_token %}
         {{form}}
-        <input type="submit" >
+        <input type="submit" value ='edit' >
     </form>
 </div>
 

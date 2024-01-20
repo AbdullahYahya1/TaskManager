@@ -1,93 +1,140 @@
-{% include "base.html" %}
-{% load static %} 
+{% include "base.html" %} {% load static %} {% block header %}
+<link
+  rel="stylesheet"
+  href="{% static 'taskapp/css/style.css' %}"
+/>
+<script src="{% static 'taskapp/js/app.js' %}"></script>
+{% endblock header %} {% block content %}
+<div class="addbutton">
+  <img
+    class="addimg"
+    src="{% static 'taskapp/images/add.jpg' %}"
+    alt=""
+  />
+</div>
+<div class="navigation_bar">
+  <div>
+    title or img
+  </div>
+  <div class='flex'>
+    <div class="user-greeting"> {{ user }}</div>
+    <a href="{% url 'logout_page' %}" class="logout-button" >logout</a>
+  </div>
+</div>
 
-{% block header %}
-    <link rel="stylesheet"href="{% static 'taskapp/css/style.css' %}"/>
-    <script src="{% static 'taskapp/js/app.js' %}"></script>
-{% endblock header %} 
+<div class="search-container">
+  <form
+    action="{% url 'index' %}"
+    method="get"
+    class="search-form"
+  >
+    <input
+      type="hidden"
+      name="room_id"
+      value="{{ room.id }}"
+    />
+    <input
+      type="text"
+      name="search"
+      placeholder="Search for a task..."
+      value="{{ query }}"
+      class="search-input"
+    />
+    <button
+      type="submit"
+      class="search-button"
+    >
+      Search
+    </button>
+  </form>
+</div>
 
-{% block content %}
-    <div class='addbutton' >
-        <img class='addimg' src="{% static 'taskapp/images/add.jpg' %}" alt="">
-    </div>
-
-    <h1>hi {{user}}</h1>
-    <a href="{% url 'logout_page'  %}">logout</a>
+<div class="grid2">
+  <div class="left_bar">
+    <select id="roomSelect">
+      {% for r in rooms %}
+      <option value="{% url 'index' %}?room_id={{ r.id }}">
+        Room: {{ r.name }}
+      </option>
+      {% endfor %}
+    </select>
     <div>
-        <input type="text" placeholder='search for a task....'> 
-        <button type="submit">search</button>
+      <p class="Pert">pertcepents :</p>
+      {% for user_n in users %}
+      <div class="email">{{user_n}}</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="grid-item">
+      <h1 class="tasksHeaders">daily tasks</h1>
+      {% for task in daytask %}
+      <div
+        class="{{task.id}} daytask item {% if task.is_finished %}strikethrough{% endif %}"
+      >
+        <div class="flex-large">{{ task }}</div>
+        <div class="flex-small">{{ task.estimated_time }}</div>
+        <div class="flex-end">
+          <a
+            href='{% url "task" task.id %}?taskType=daytask'
+            class="details-button"
+            >Details</a
+          >
+        </div>
+      </div>
+      {% endfor %}
     </div>
 
-    {% for r in rooms %}
-    {{r}} {{r.id}}
-    {% endfor %}
-    <div class="grid">
-        <div class="grid-item">
-            <h1 class='tasksHeaders'>daily tasks</h1>
-            {% for task in daytask %}
-            <div class="{{task.id}} daytask item {% if task.is_finished %}strikethrough{% endif %}">
-                <div class="flex-large">
-                    {{ task }}
-                </div>
-                <div class="flex-small">
-                    {{ task.estimated_time }}
-                </div>
-                <div class="flex-end">
-                    <a href='{% url "task" task.id %}?taskType=weeklytask' class="details-button">Details</a>
-                </div>
-            </div>
-            {% endfor %}
+    <div class="grid-item">
+      <h1 class="tasksHeaders">weekly tasks</h1>
+      {% for task in weeklytask %}
+      <div
+        class="{{task.id}} weeklytask item {% if task.is_finished %}strikethrough{% endif %}"
+      >
+        <div class="flex-large">{{ task }}</div>
+        <div class="flex-small">{{ task.estimated_time }}</div>
+        <div class="flex-end">
+          <a
+            href='{% url "task" task.id %}?taskType=weeklytask'
+            class="details-button"
+            >Details</a
+          >
         </div>
-
-        <div class="grid-item">
-            <h1 class='tasksHeaders'>weekly tasks</h1>
-            {% for task in weeklytask %}
-            <div class="{{task.id}} weeklytask item {% if task.is_finished %}strikethrough{% endif %}">
-                <div class="flex-large">
-                    {{ task }}
-                </div>
-                <div class="flex-small">
-                    {{ task.estimated_time }}
-                </div>
-                <div class="flex-end">
-                    <a href='{% url "task" task.id %}?taskType=weeklytask' class="details-button">Details</a>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-
-        <div class="grid-item">
-            <h1 class='tasksHeaders'>monthly tasks</h1>
-            {% for task in monthlytask %}
-            <div class="{{task.id}} monthlytask item {% if task.is_finished %}strikethrough{% endif %}">
-                <div class="flex-large">
-                    {{ task }}
-                </div>
-                <div class="flex-small">
-                    {{ task.estimated_time }}
-                </div>
-                <div class="flex-end">
-                    <a href='{% url "task" task.id %}?taskType=monthlytask' class="details-button">Details</a>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+      </div>
+      {% endfor %}
     </div>
 
-    <div class='addContainer view'>
-        <div class='addbutton closeButton'>
-            X
+    <div class="grid-item">
+      <h1 class="tasksHeaders">monthly tasks</h1>
+      {% for task in monthlytask %}
+      <div
+        class="{{task.id}} monthlytask item {% if task.is_finished %}strikethrough{% endif %}"
+      >
+        <div class="flex-large">{{ task }}</div>
+        <div class="flex-small">{{ task.estimated_time }}</div>
+        <div class="flex-end">
+          <a
+            href='{% url "task" task.id %}?taskType=monthlytask'
+            class="details-button"
+            >Details</a
+          >
         </div>
-        {% if room %}
-        <a href="{% url 'add_task' room.id 'daytask' %}">Add Daily Task</a>
-        <a href="{% url 'add_task' room.id 'weeklytask' %}">Add Weekly Task</a>
-        <a href="{% url 'add_task' room.id 'monthlytask' %}">Add Monthly Task</a>
-        <a href="{% url 'share_room' room.id %}">Share This Room</a>
-        {% endif %}
+      </div>
+      {% endfor %}
     </div>
+  </div>
+</div>
+<div class="addContainer view">
+  <div class="addbutton closeButton">X</div>
+  {% if room %}
+  <a href="{% url 'add_task' room.id 'daytask' %}">Add Daily Task</a>
+  <a href="{% url 'add_task' room.id 'weeklytask' %}">Add Weekly Task</a>
+  <a href="{% url 'add_task' room.id 'monthlytask' %}">Add Monthly Task</a>
+  <a href="{% url 'share_room' room.id %}">Share This Room</a>
+  {% endif %}
+</div>
 
-    <div class='popoutTaskContainer view'>
-        
-    </div>
+<div class="popoutTaskContainer view"></div>
 
 {% endblock content %}

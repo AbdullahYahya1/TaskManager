@@ -2,10 +2,33 @@
 {% load static %} 
 
 {% block header %}
-    <link rel="stylesheet"href="{% static 'taskapp/css/style.css' %}"/>
+    <link rel="stylesheet"href="{% static 'taskapp/css/task.css' %}"/>
     <script src="{% static 'taskapp/js/app.js' %}"></script>
 {% endblock header %} 
 
 {% block content %}
+<div class="card">
+    <h1 class="card-title">Task Details</h1>
+
+    <!-- Displaying Task Details -->
+    <div class="card-content">
+        <p><span class="strong-text">Title:</span> {{ task.title }}</p>
+        <p><span class="strong-text">Description:</span> {{ task.description }}</p>
+        <p><span class="strong-text">Date Created:</span> {{ task.date_created }}</p>
+        <p><span class="strong-text">Estimated Time:</span> {{ task.estimated_time }}</p>
+        <p><span class="strong-text">Status:</span> {% if task.is_finished %}Finished{% else %}Not Finished{% endif %}</p>
+        
+        <!-- Additional Fields Based on Task Type -->
+        {% if task_type == '0' %}
+            <p><span class="strong-text">Day of Week:</span> {{ task.day_of_week }}</p>
+        {% elif task_type == '1' %}
+            <p><span class="strong-text">Day of Month:</span> {{ task.day_of_month }}</p>
+        {% endif %}
+    </div>
+    <!-- Action Buttons -->
+    <a href="{% url "edit_task" task.id task_type %}" class="button button-primary">Edit</a>
+    <a href="{% url "delete_task" task.id task_type %}" class="button button-danger">Delete</a>
+    <a href="{{request.META.HTTP_REFERER|default:'/'}}" class="button button-secondary">Go Back</a>
+</div>
 
 {% endblock content %}   

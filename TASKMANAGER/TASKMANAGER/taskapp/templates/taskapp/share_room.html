@@ -3,8 +3,8 @@
 {% block content %}
 <form method="post">
     {% csrf_token %}
-    <label for="username">Share with (username):</label>
-    <input type="text" id="username" name="username">
+    <label for="email">Share with (email):</label>
+    <input type="email" id="email" name="email">
     <button type="submit">Share Room</button>
 </form>
 {% endblock %}

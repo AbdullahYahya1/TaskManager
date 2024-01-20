@@ -41,4 +41,18 @@ document.addEventListener('DOMContentLoaded', function() {
             event.stopPropagation();
         });
     });
+
+    window.onload = function() {
+        var roomSelect = document.getElementById('roomSelect');
+        var currentRoomId = new URLSearchParams(window.location.search).get('room_id');
+        for (var i = 0; i < roomSelect.options.length; i++) {
+            if (roomSelect.options[i].value.includes('room_id=' + currentRoomId)) {
+                roomSelect.selectedIndex = i;
+                break;
+            }
+        }
+    };
+    document.getElementById('roomSelect').addEventListener('change', function() {
+        window.location.href = this.value;
+    });
 });
