@@ -160,7 +160,7 @@ def add_task(request, room_id, task_type):
     else:
         form = form_class()
     
-    return render(request, 'taskapp/add_task.html', {'form': form, 'room': room})
+    return render(request, 'taskapp/add_task.html', {'form': form, 'room': room , 'task_type':task_type[0:task_type.find('task')]})
 
 
 def delete_task(request, task_id , task_type):

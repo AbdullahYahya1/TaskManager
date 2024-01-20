@@ -2,11 +2,10 @@
 {% load static %} 
 
 {% block header %}
-    <link rel="stylesheet"href="{% static 'taskapp/css/edit.css' %}"/>
+    <link rel="stylesheet"href="{% static 'taskapp/css/forms.css' %}"/>
 {% endblock header %} 
 {% block content %}
-
-<div>
+<div class='form-container'>
     <form action="" method="post">
         {% csrf_token %}
         {{form}}

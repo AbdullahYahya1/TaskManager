@@ -2,16 +2,20 @@
 {% load static %} 
 
 {% block header %}
-    <link rel="stylesheet"href="{% static 'taskapp/css/addtask.css' %}"/>
+    <link rel="stylesheet"href="{% static 'taskapp/css/forms.css' %}"/>
 {% endblock header %} 
 {% block content %}
-
-<div>
+<h1 class='tasktype'>
+    add a {{task_type}} task
+</h1>
+<div class='form-container'>
     <form action="" method="post">
         {% csrf_token %}
         {{form}}
         <input type="submit" >
     </form>
+
+
 </div>
 
 {% endblock content %}   
