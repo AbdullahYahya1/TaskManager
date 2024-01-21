@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404, render,redirect
 from django.http import HttpResponse, HttpResponseForbidden
+from django.urls import reverse_lazy
 from .models import *
 from .forms import *
 # from .forms import RoomForm
@@ -50,27 +51,34 @@ def create_room(request):
 
 def index(request):
     query = request.GET.get('search', '')
-    room_id = request.GET.get('room_id')  # Get room_id from URL
+    room_id = request.GET.get('room_id')  
     rooms = Room.objects.filter(users=request.user.id)
+
     if request.user.is_authenticated:
         if room_id:
             room = get_object_or_404(Room, pk=room_id, users=request.user)
         else:
-            room = rooms.first()  # Default to the first room
-        # Filter tasks based on the search query
-        daytask = room.day_tasks.filter(title__icontains=query)
-        weeklytask = room.weekly_tasks.filter(title__icontains=query)
-        monthlytask = room.monthly_tasks.filter(title__icontains=query)
-        return render(request, 'taskapp/index.html', {
-            'daytask': daytask,
-            'weeklytask': weeklytask,
-            'monthlytask': monthlytask,
-            'room': room,
-            'rooms': rooms,
-            'query': query , 
-            'users': room.users.all(),
-            
-        })
+            first_room = rooms.first()  
+            if first_room:
+                return redirect(reverse_lazy('index') + f'?room_id={first_room.id}')
+            else:
+                room = None
+
+        if room:
+            daytask = room.day_tasks.filter(title__icontains=query)
+            weeklytask = room.weekly_tasks.filter(title__icontains=query)
+            monthlytask = room.monthly_tasks.filter(title__icontains=query)
+            return render(request, 'taskapp/index.html', {
+                'daytask': daytask,
+                'weeklytask': weeklytask,
+                'monthlytask': monthlytask,
+                'room': room,
+                'rooms': rooms,
+                'query': query,
+                'users': room.users.all() if room else [],
+            })
+        else:
+            return render(request, 'taskapp/no_room.html', {'query': query})
     else:
         return render(request, 'taskapp/index.html')
 
