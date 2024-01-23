@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import * 
+from .models import *
+
 admin.site.register(DayTask)
 admin.site.register(WeeklyTask)
 admin.site.register(MonthlyTask)
