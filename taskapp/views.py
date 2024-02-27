@@ -52,7 +52,7 @@ def create_room(request):
         return redirect("index")  # or wherever you want to redirect
     return render(request, "taskapp/create_room.html")
 
-
+@login_required(login_url="login_form")
 def index(request):
     query = request.GET.get("search", "")
     room_id = request.GET.get("room_id")
